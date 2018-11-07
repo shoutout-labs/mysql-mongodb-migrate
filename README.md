@@ -1,7 +1,7 @@
 # MySQL MongoDB Migrate
 
-[![npm version](https://badge.fury.io/js/dynamodb-mongodb-migrate.svg)](https://badge.fury.io/js/dynamodb-mongodb-migrate)
-[![Build Status](https://travis-ci.org/shoutout-labs/dynamodb-mongodb-migrate.svg?branch=master)](https://travis-ci.org/shoutout-labs/dynamodb-mongodb-migrate)
+[![npm version](https://badge.fury.io/js/mysql-mongodb-migrate.svg)](https://badge.fury.io/js/mysql-mongodb-migrate)
+[![Build Status](https://travis-ci.org/shoutout-labs/mysql-mongodb-migrate.svg?branch=master)](https://travis-ci.org/shoutout-labs/mysql-mongodb-migrate)
 
 Data migration module for migrating mysql tables to mongodb db collections
 
