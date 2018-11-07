@@ -1,6 +1,6 @@
 {
   "name": "mysql-mongodb-migrate",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "repository": "https://github.com/shoutout-labs/mysql-mongodb-migrate.git",
   "description": "migrate mysql tables to mongodb collections",
   "main": "index.js",
