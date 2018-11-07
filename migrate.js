@@ -35,8 +35,22 @@ function loadMapperFile() {
         const MigrationJob = require('./index');
         const metadata = require('./metadata');
 
-        const migrationJob = new MigrationJob(config.MYSQL_TABLE_NAME, config.MONGODB_COLLECTION_NAME, config.MONGODB_DATABASE_NAME, 100, config.MYSQL_READ_THROUGHPUT);
-        migrationJob.setSourcefilterExpression(metadata.filterExpression, metadata.expressionAttributeNames, metadata.expressionAttributeValues);
+        let sourceConnectionOptions = {
+            host: config.MYSQL_HOST,
+            port: config.MYSQL_PORT,
+            user: config.MYSQL_USER,
+            password: config.MYSQL_PASSWORD
+        };
+        let targetConnectionOptions = {
+            host: config.MONGODB_ENDPOINT,
+            user: config.MONGODB_USERNAME,
+            password: config.MONGODB_PASSWORD
+        };
+
+        const migrationJob = new MigrationJob(config.MYSQL_DATABASE_NAME, config.MYSQL_TABLE_NAME, config.MONGODB_DATABASE_NAME, config.MONGODB_COLLECTION_NAME, sourceConnectionOptions, targetConnectionOptions, 500, config.MYSQL_READ_THROUGHPUT);
+        if (metadata.filterExpression) {
+            migrationJob.setSourcefilterExpression(metadata.filterExpression);
+        }
         if (metadata.filterFunction) {
             migrationJob.setFilterFunction(metadata.filterFunction);
         }
@@ -52,6 +66,3 @@ function loadMapperFile() {
         process.exit(1);
     }
 })();
-
-
-

@@ -18,12 +18,13 @@ class MySQLDAO {
             try {
                 let mysqlConnection = await MySQLConnector.getConnection(ctx.host, ctx.port, ctx.user, ctx.password, ctx.database, ctx.ssl);
 
-                let queryString = 'SELECT * FROM ?';
+                let queryString = "SELECT * FROM " + ctx.table;
                 if (whereExp) {
-                    queryString += ' WHERE ' + whereExp;
+                    queryString += " WHERE " + whereExp;
                 }
-                queryString += ' LIMIT ?,?';
-                let queryData = [ctx.table, offset, limit];
+                queryString += " LIMIT ? OFFSET ?";
+                console.log(ctx.table);
+                let queryData = [limit, offset];
 
                 mysqlConnection.query(queryString, queryData, function (err, results) {
                     if (err) {

@@ -40,39 +40,34 @@ class MigrationJob {
         let ctx = this;
         return new Promise(async (resolve, reject) => {
             try {
-                let lastEvalKey, startTime, endTime, totalItemCount = 0, iteration = 1, permitsToConsume = 1;
+                let readOffset = 0, startTime, endTime, totalItemCount = 0, iteration = 1, permitsToConsume = ctx.sourceReadThroughput;
                 do {
                     startTime = new Date().getTime();
                     await ctx._removeTokens(permitsToConsume);
-                    let sourceItemResponse = await ctx.mysqlDAO.getRecords(ctx.filterExpression, lastEvalKey, ctx.sourceReadLimit);
-                    totalItemCount += sourceItemResponse.Count;
-                    let consumedCapacity = sourceItemResponse.ConsumedCapacity.CapacityUnits;
-                    console.log('Consumed capacity ', consumedCapacity);
-                    console.log('Received ', sourceItemResponse.Count, ' items at iteration ', iteration, ' and total of ', totalItemCount, ' items received');
-                    permitsToConsume = Math.round(consumedCapacity - 1);
-                    if (permitsToConsume < 1) {
-                        permitsToConsume = 1;
-                    }
-                    let sourceItems = sourceItemResponse && sourceItemResponse.Items ? sourceItemResponse.Items : [];
+                    let sourceItems = await ctx.mysqlDAO.getRecords(ctx.filterExpression, readOffset, ctx.sourceReadLimit);
+                    totalItemCount += sourceItems.length;
+                    console.log('Received ', sourceItems.length, ' items at iteration ', iteration, ' and total of ', totalItemCount, ' items received');
+                    console.log(sourceItems.length);
                     let targetItems = lodash
                         .chain(sourceItems)
                         .filter(ctx.filterFunction)
                         .map(ctx.mapperFunction)
                         .value();
+                    console.log(targetItems);
                     if (targetItems.length > 0) {
                         let results = await ctx.mongoDBDAO.intertOrUpdateItems(targetItems);
                         console.log('Modified mongodb doc count : ', results.modifiedCount);
                         console.log('Inserted mongodb doc count : ', results.upsertedCount);
                     }
-                    if (sourceItemResponse && sourceItemResponse.LastEvaluatedKey) {
-                        lastEvalKey = sourceItemResponse.LastEvaluatedKey;
+                    if (sourceItems.length > 0) {
+                        readOffset = totalItemCount;
                     } else {
-                        lastEvalKey = null;
+                        readOffset = null;
                     }
                     endTime = new Date().getTime();
                     console.log('Loop completion time : ', endTime - startTime, ' ms');
                     iteration++;
-                } while (lastEvalKey);
+                } while (readOffset);
                 console.log('Migration completed');
                 resolve();
             } catch (error) {
