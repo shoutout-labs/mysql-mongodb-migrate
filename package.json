@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "docker-hub-publish":"./docker-hub-publish.sh"
+    "docker-hub-publish": "./docker-hub-publish.sh"
   },
   "keywords": [
     "mysql",
@@ -19,6 +19,7 @@
     "dotenv": "^6.1.0",
     "limiter": "^1.1.3",
     "lodash": "^4.17.11",
-    "mongodb": "^3.1.8"
+    "mongodb": "^3.1.8",
+    "mysql": "^2.16.0"
   }
 }

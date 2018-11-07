@@ -1,20 +1,20 @@
-# DynamoDB MongoDB Migrate
+# MySQL MongoDB Migrate
 
 [![npm version](https://badge.fury.io/js/dynamodb-mongodb-migrate.svg)](https://badge.fury.io/js/dynamodb-mongodb-migrate)
 [![Build Status](https://travis-ci.org/shoutout-labs/dynamodb-mongodb-migrate.svg?branch=master)](https://travis-ci.org/shoutout-labs/dynamodb-mongodb-migrate)
 
-Data migration module for migrating dynamodb tables to mongodb db collections
+Data migration module for migrating mysql tables to mongodb db collections
 
 ## Installing
 
 ```shell
-npm install dynamodb-mongodb-migrate
+npm install mysql-mongodb-migrate --save
 ```
 
 ## Quick Usage
 
 ```shell
-const MigrationJob = require('dynamodb-mongodb-migrate');
+const MigrationJob = require('mysql-mongodb-migrate');
 
 const migrationJob = new MigrationJob('DYNAMODB_TABLE_NAME', 'MONGODB_COLLECTION_NAME', 'MONGODB_DATABASE_NAME', DYNAMODB_SCAN_LIMIT, DYNAMODB_READ_THROUGHPUT);
 
@@ -26,7 +26,7 @@ migrationJob.run()
 ### Initialize
 
 ```javascript
-const MigrationJob = require('dynamodb-mongodb-migrate');
+const MigrationJob = require('mysql-mongodb-migrate');
 
 const migrationJob = new MigrationJob('DYNAMODB_TABLE_NAME', 'MONGODB_COLLECTION_NAME', 'MONGODB_DATABASE_NAME', DYNAMODB_SCAN_LIMIT, DYNAMODB_READ_THROUGHPUT);
 ```
