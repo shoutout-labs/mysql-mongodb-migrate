@@ -47,7 +47,7 @@ function loadMapperFile() {
             password: config.MONGODB_PASSWORD
         };
 
-        const migrationJob = new MigrationJob(config.MYSQL_DATABASE_NAME, config.MYSQL_TABLE_NAME, config.MONGODB_DATABASE_NAME, config.MONGODB_COLLECTION_NAME, sourceConnectionOptions, targetConnectionOptions, 500, config.MYSQL_READ_THROUGHPUT);
+        const migrationJob = new MigrationJob(config.MYSQL_DATABASE_NAME, config.MYSQL_TABLE_NAME, config.MONGODB_DATABASE_NAME, config.MONGODB_COLLECTION_NAME, sourceConnectionOptions, targetConnectionOptions, config.MYSQL_READ_LIMIT_PER_ITERATION, config.MYSQL_READ_THROUGHPUT);
         if (metadata.filterExpression) {
             migrationJob.setSourcefilterExpression(metadata.filterExpression);
         }
