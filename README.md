@@ -13,10 +13,24 @@ npm install mysql-mongodb-migrate --save
 
 ## Quick Usage
 
-```shell
+```javascript
 const MigrationJob = require('mysql-mongodb-migrate');
 
-const migrationJob = new MigrationJob('DYNAMODB_TABLE_NAME', 'MONGODB_COLLECTION_NAME', 'MONGODB_DATABASE_NAME', DYNAMODB_SCAN_LIMIT, DYNAMODB_READ_THROUGHPUT);
+let sourceConnectionOptions = {
+    host: <MYSQL_HOST>,
+    port: <MYSQL_PORT>,
+    user: <MYSQL_USER>,
+    password: <MYSQL_PASSWORD>,
+    ssl: <MYSQL_SSL> //optional (Ex:- 'Amazon RDS')
+};
+let targetConnectionOptions = {
+    host: <MONGODB_ENDPOINT>,
+    user: <MONGODB_USERNAME>,
+    password: <MONGODB_PASSWORD>
+};
+
+const migrationJob = new MigrationJob(<MYSQL_DATABASE_NAME>, <MYSQL_TABLE_NAME>, <MONGODB_DATABASE_NAME>, <MONGODB_COLLECTION_NAME>, sourceConnectionOptions, targetConnectionOptions, <MYSQL_READ_LIMIT_PER_ITERATION>, <MYSQL_READ_THROUGHPUT>);
+
 
 migrationJob.run()
 ```
@@ -28,20 +42,28 @@ migrationJob.run()
 ```javascript
 const MigrationJob = require('mysql-mongodb-migrate');
 
-const migrationJob = new MigrationJob('DYNAMODB_TABLE_NAME', 'MONGODB_COLLECTION_NAME', 'MONGODB_DATABASE_NAME', DYNAMODB_SCAN_LIMIT, DYNAMODB_READ_THROUGHPUT);
+let sourceConnectionOptions = {
+    host: <MYSQL_HOST>,
+    port: <MYSQL_PORT>,
+    user: <MYSQL_USER>,
+    password: <MYSQL_PASSWORD>,
+    ssl: <MYSQL_SSL> //optional (Ex:- 'Amazon RDS')
+};
+let targetConnectionOptions = {
+    host: <MONGODB_ENDPOINT>,
+    user: <MONGODB_USERNAME>,
+    password: <MONGODB_PASSWORD>
+};
+
+const migrationJob = new MigrationJob(<MYSQL_DATABASE_NAME>, <MYSQL_TABLE_NAME>, <MONGODB_DATABASE_NAME>, <MONGODB_COLLECTION_NAME>, sourceConnectionOptions, targetConnectionOptions, <MYSQL_READ_LIMIT_PER_ITERATION>, <MYSQL_READ_THROUGHPUT>);
 ```
 
 ### Set dynamodb filter expression - filter when scanning dynamodb
 
 ```javascript
-const filterExpression = '#attr1 = :val1';
-const expressionAttributeNames = {
-    '#attr1':'attribute1'
-};
-const expressionAttributeValues = {
-    ':val1':'value1'
-}
-migrationJob.setSourcefilterExpression(filterExpression, expressionAttributeNames, expressionAttributeValues);
+const filterExpression = 'attr1 = val1';
+
+migrationJob.setSourcefilterExpression(filterExpression);
 ```
 
 ### Set data filter function - filter after scan result - similar to lodash filter
