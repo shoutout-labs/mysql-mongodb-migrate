@@ -1,0 +1,7 @@
+version: '3.4'
+
+services:
+   mysql-mongodb-migrate:
+      build: .
+      env_file:
+           - ./.env
