@@ -12,17 +12,25 @@ class MySQLDAO {
         this.ssl = ssl;
     }
 
-    getRecords(filterExp, offset, limit) {
+    getRecords(whereExp, offset, limit) {
         let ctx = this;
         return new Promise(async (resolve, reject) => {
             try {
                 let mysqlConnection = await MySQLConnector.getConnection(ctx.host, ctx.port, ctx.user, ctx.password, ctx.database, ctx.ssl);
-                ctx.docClient.scan(params, function (error, response) {
-                    if (error) {
-                        console.error(error);
-                        reject(error);
+
+                let queryString = 'SELECT * FROM ?';
+                if (whereExp) {
+                    queryString += ' WHERE ' + whereExp;
+                }
+                queryString += ' LIMIT ?,?';
+                let queryData = [ctx.table, offset, limit];
+
+                mysqlConnection.query(queryString, queryData, function (err, results) {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
                     } else {
-                        resolve(response);
+                        resolve(results);
                     }
                 });
             } catch (error) {

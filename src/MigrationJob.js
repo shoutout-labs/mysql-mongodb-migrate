@@ -1,25 +1,20 @@
 'use strict';
 const lodash = require('lodash');
 const RateLimiter = require('limiter').RateLimiter;
-const DynamoDBDAO = require('./dao/DynamoDBDAO');
+const MySQLDAO = require('./dao/MySQLDAO');
 const MongoDBDAO = require('./dao/MongoDBDAO');
 
 
 class MigrationJob {
-    constructor(sourceTableName, targetTableName, targetDbName, dynamodbEvalLimit, dynamoDbReadThroughput) {
-        this.sourceTableName = sourceTableName;
-        this.targetTableName = targetTableName;
-        this.targetDbName = targetDbName;
+    constructor(sourceDbName, sourceTableName, targetDbName, targetTableName, sourceConnectionOptions, targetConnectionOptions, sourceReadLimit, sourceReadThroughput) {
         this.mapperFunction = (item) => { return item; };
         this.filterFunction = () => { return true; };
-        this.dynamoDBDAO = new DynamoDBDAO(sourceTableName);
-        this.mongoDBDAO = new MongoDBDAO(this.targetTableName, this.targetDbName);
-        this.dynamodbEvalLimit = dynamodbEvalLimit || 100;
+        this.mysqlDAO = new MySQLDAO(sourceTableName, sourceDbName, sourceConnectionOptions.host, sourceConnectionOptions.port, sourceConnectionOptions.user, sourceConnectionOptions.password, sourceConnectionOptions.ssl);
+        this.mongoDBDAO = new MongoDBDAO(targetTableName, targetDbName, targetConnectionOptions.host, targetConnectionOptions.user, targetConnectionOptions.password);
+        this.sourceReadLimit = sourceReadLimit || 100;
         this.filterExpression = null;
-        this.expressionAttributeNames = null;
-        this.expressionAttributeValues = null;
-        this.dynamoDbReadThroughput = dynamoDbReadThroughput ? Number(dynamoDbReadThroughput) : 25;
-        this.limiter = new RateLimiter(this.dynamoDbReadThroughput, 1000);
+        this.sourceReadThroughput = sourceReadThroughput ? Number(sourceReadThroughput) : 1000;
+        this.limiter = new RateLimiter(this.sourceReadThroughput, 1000);
         this._removeTokens = (tokenCount) => {
             return new Promise((resolve, reject) => {
                 this.limiter.removeTokens(tokenCount, () => {
@@ -37,10 +32,8 @@ class MigrationJob {
         this.filterFunction = filterFunction;
     }
 
-    setSourcefilterExpression(filterExpression, expressionAttributeNames, expressionAttributeValues) {
+    setSourcefilterExpression(filterExpression) {
         this.filterExpression = filterExpression;
-        this.expressionAttributeNames = expressionAttributeNames;
-        this.expressionAttributeValues = expressionAttributeValues;
     }
 
     run() {
@@ -51,7 +44,7 @@ class MigrationJob {
                 do {
                     startTime = new Date().getTime();
                     await ctx._removeTokens(permitsToConsume);
-                    let sourceItemResponse = await ctx.dynamoDBDAO.scan(ctx.filterExpression, ctx.expressionAttributeNames, ctx.expressionAttributeValues, lastEvalKey, ctx.dynamodbEvalLimit);
+                    let sourceItemResponse = await ctx.mysqlDAO.getRecords(ctx.filterExpression, lastEvalKey, ctx.sourceReadLimit);
                     totalItemCount += sourceItemResponse.Count;
                     let consumedCapacity = sourceItemResponse.ConsumedCapacity.CapacityUnits;
                     console.log('Consumed capacity ', consumedCapacity);
