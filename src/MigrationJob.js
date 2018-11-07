@@ -47,13 +47,11 @@ class MigrationJob {
                     let sourceItems = await ctx.mysqlDAO.getRecords(ctx.filterExpression, readOffset, ctx.sourceReadLimit);
                     totalItemCount += sourceItems.length;
                     console.log('Received ', sourceItems.length, ' items at iteration ', iteration, ' and total of ', totalItemCount, ' items received');
-                    console.log(sourceItems.length);
                     let targetItems = lodash
                         .chain(sourceItems)
                         .filter(ctx.filterFunction)
                         .map(ctx.mapperFunction)
                         .value();
-                    console.log(targetItems);
                     if (targetItems.length > 0) {
                         let results = await ctx.mongoDBDAO.intertOrUpdateItems(targetItems);
                         console.log('Modified mongodb doc count : ', results.modifiedCount);
