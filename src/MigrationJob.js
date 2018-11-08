@@ -11,7 +11,7 @@ class MigrationJob {
         this.filterFunction = () => { return true; };
         this.mysqlDAO = new MySQLDAO(sourceTableName, sourceDbName, sourceConnectionOptions.host, sourceConnectionOptions.port, sourceConnectionOptions.user, sourceConnectionOptions.password, sourceConnectionOptions.ssl);
         this.mongoDBDAO = new MongoDBDAO(targetTableName, targetDbName, targetConnectionOptions.host, targetConnectionOptions.user, targetConnectionOptions.password);
-        this.sourceReadLimit = sourceReadLimit || 100;
+        this.sourceReadLimit = sourceReadLimit ? Number(sourceReadLimit) : 100;
         this.filterExpression = null;
         this.sourceReadThroughput = sourceReadThroughput ? Number(sourceReadThroughput) : 1000;
         this.limiter = new RateLimiter(this.sourceReadThroughput, 1000);
