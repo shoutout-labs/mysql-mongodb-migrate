@@ -1,7 +1,7 @@
 'use strict';
 //loading environment variables
 require('dotenv').config()
-const config = require('./src/config');
+const config = require('./config');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
     region: config.AWS_REGION
